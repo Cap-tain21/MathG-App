@@ -1,0 +1,8 @@
+{
+  "appId": "com.mathg.app",
+  "appName": "MathG",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}

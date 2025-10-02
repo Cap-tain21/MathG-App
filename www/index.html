@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MathG</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+        }
+
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 1;
+            transition: opacity 0.8s ease;
+        }
+
+        .splash-screen.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .mathg-cube {
+            width: 180px;
+            height: 180px;
+            background: white;
+            border-radius: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            animation: cubePulse 1.5s ease-in-out infinite;
+            transform-style: preserve-3d;
+            transform: rotateX(15deg) rotateY(15deg);
+        }
+
+        @keyframes cubePulse {
+            0%, 100% { 
+                transform: rotateX(15deg) rotateY(15deg) scale(1);
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            }
+            50% { 
+                transform: rotateX(20deg) rotateY(20deg) scale(1.05);
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            }
+        }
+
+        .mathg-text {
+            font-size: 42px;
+            font-weight: 900;
+            color: #2c3e50;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            background: white;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            touch-action: manipulation;
+            overflow: hidden;
+        }
+
+        body.dark-theme {
+            background: #1a1a1a;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 400px;
+            height: 90vh;
+            max-height: 800px;
+            background: white;
+            border-radius: 25px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            border: 2px solid #e0e0e0;
+            opacity: 0;
+            animation: fadeInGame 0.5s ease 1.5s forwards;
+        }
+
+        @keyframes fadeInGame {
+            to { opacity: 1; }
+        }
+
+        .dark-theme .game-container {
+            background: #2c3e50;
+            border-color: #34495e;
+        }
+
+        .coin-display {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border-radius: 20px;
+            padding: 8px 15px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .coin-icon {
+            font-size: 16px;
+        }
+
+        .coin-text {
+            font-size: 14px;
+            font-weight: 800;
+            color: white;
+        }
+
+        .level-display {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 20px;
+            padding: 8px 20px;
+            z-index: 100;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .level-display:hover {
+            transform: translateX(-50%) scale(1.05);
+        }
+
+        .level-text {
+            font-size: 14px;
+            font-weight: 800;
+            color: white;
+        }
+
+        .settings-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 15px;
+            width: 45px;
+            height: 45px;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            color: white;
+        }
+
+        .settings-btn:hover {
+            transform: rotate(90deg) scale(1.1);
+        }
+
+        .target-section {
+            padding: 25px;
+            text-align: center;
+            background: transparent;
+            position: relative;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .dark-theme .target-section {
+            border-bottom-color: #34495e;
+        }
+
+        .target-number {
+            font-size: 64px;
+            font-weight: 900;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .dark-theme .target-number {
+            background: linear-gradient(135deg, #ffffff, #e0e0e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .controls-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            background: white;
+            position: relative;
+        }
+
+        .dark-theme .controls-area {
+            background: #2c3e50;
+        }
+
+        .curved-controls {
+            position: relative;
+            height: 180px;
+            margin-bottom: 20px;
+        }
+
+        .numbers-arc {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 280px;
+            height: 120px;
+        }
+
+        .number-on-arc {
+            position: absolute;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 6px 15px rgba(231, 76, 60, 0.3);
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255,255,255,0.3);
+            z-index: 5;
+        }
+
+        .number-on-arc:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(231, 76, 60, 0.4);
+        }
+
+        .number-on-arc.selected {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            transform: scale(1.15);
+        }
+
+        .operators-row {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            z-index: 10;
+        }
+
+        .operator-center-btn {
+            width: 45px;
+            height: 45px;
+            border: none;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-size: 20px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 6px 15px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .equation-section {
+            padding: 20px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border: 2px dashed #e0e0e0;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .dark-theme .equation-section {
+            background: #34495e;
+            border-color: #34495e;
+        }
+
+        .equation-display {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            min-height: 50px;
+        }
+
+        .equation-chip {
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-size: 20px;
+            font-weight: 800;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .number-chip {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        .operator-chip {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: auto;
+        }
+
+        .action-btn {
+            height: 55px;
+            border: none;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="splash-screen" id="splashScreen">
+        <div class="mathg-cube">
+            <div class="mathg-text">MathG</div>
+        </div>
+    </div>
+
+    <div class="game-container">
+        <div class="coin-display">
+            <div class="coin-icon">🪙</div>
+            <div class="coin-text" id="coinCount">100</div>
+        </div>
+
+        <div class="level-display" onclick="showLevels()">
+            <div class="level-text" id="currentLevelText">Beginner 1</div>
+        </div>
+
+        <button class="settings-btn" onclick="toggleSettings()">⚙️</button>
+
+        <div class="game-header">
+            <h1 class="game-title">MathG</h1>
+        </div>
+
+        <div class="target-section">
+            <div style="font-size: 14px; margin-bottom: 8px; font-weight: 600; color: #666;">TARGET NUMBER</div>
+            <div class="target-number" id="targetNumber">10</div>
+            <div style="font-size: 16px; font-weight: 500; color: #666;">Use exactly <strong id="requiredNumbers">2</strong> numbers</div>
+        </div>
+
+        <div class="equation-hint" id="equationHint">
+            Build your equation to reach the target!
+        </div>
+
+        <div class="calculation-hint" id="calculationHint"></div>
+
+        <div class="controls-area">
+            <div class="curved-controls">
+                <div class="numbers-arc" id="numbersArc"></div>
+                <div class="operators-row">
+                    <button class="operator-center-btn" onclick="addToEquation("+")">+</button>
+                    <button class="operator-center-btn" onclick="addToEquation("-")">−</button>
+                    <button class="operator-center-btn" onclick="addToEquation("*")">×</button>
+                    <button class="operator-center-btn" onclick="addToEquation("/")">÷</button>
+                </div>
+            </div>
+
+            <div class="equation-section">
+                <div class="equation-display" id="equationDisplay">
+                    <div style="color: #95a5a6; font-size: 14px; font-style: italic;">Your equation will appear here</div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="action-btn" onclick="clearSingle()">Clear Last</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentLevel = 0;
+        let equation = [];
+        let usedNumbers = [];
+        let playerCoins = 100;
+
+        const gameLevels = [
+            { level: 1, name: "Beginner 1", target: 10, numbers: 2, numbersPool: [1,2,3,4,5], coins: 5 },
+            { level: 2, name: "Beginner 2", target: 15, numbers: 2, numbersPool: [1,2,3,4,5,6], coins: 5 }
+        ];
+
+        function initGame() {
+            loadGameProgress();
+            loadLevel(currentLevel);
+            createCurvedNumbers();
+            updateCoinDisplay();
+            
+            setTimeout(() => {
+                document.getElementById("splashScreen").classList.add("fade-out");
+            }, 1500);
+        }
+
+        function loadGameProgress() {
+            const saved = localStorage.getItem("mathGameProgress");
+            if (saved) {
+                const progress = JSON.parse(saved);
+                currentLevel = progress.level || 0;
+                playerCoins = progress.coins || 100;
+            }
+        }
+
+        function saveGameProgress() {
+            const progress = {
+                level: currentLevel,
+                coins: playerCoins,
+                timestamp: Date.now()
+            };
+            localStorage.setItem("mathGameProgress", JSON.stringify(progress));
+        }
+
+        function updateCoinDisplay() {
+            document.getElementById("coinCount").textContent = playerCoins;
+        }
+
+        function loadLevel(levelIndex) {
+            const level = gameLevels[levelIndex];
+            document.getElementById("targetNumber").textContent = level.target;
+            document.getElementById("requiredNumbers").textContent = level.numbers;
+            clearEquation();
+            createCurvedNumbers();
+            updateLevelDisplay();
+        }
+
+        function createCurvedNumbers() {
+            const arc = document.getElementById("numbersArc");
+            arc.innerHTML = "";
+            
+            const currentLevelData = gameLevels[currentLevel];
+            const numbers = currentLevelData.numbersPool;
+            const radius = 120;
+            const centerX = 140;
+            const centerY = 0;
+            const totalAngle = Math.PI * 0.7;
+            
+            numbers.forEach((num, index) => {
+                const angle = (index / (numbers.length - 1)) * totalAngle + (Math.PI - totalAngle) / 2;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+                
+                const numberBtn = document.createElement("div");
+                numberBtn.className = "number-on-arc";
+                numberBtn.textContent = num;
+                numberBtn.style.left = `${x - 22}px`;
+                numberBtn.style.top = `${y + 30}px`;
+                numberBtn.onclick = () => addToEquation(num);
+                
+                arc.appendChild(numberBtn);
+            });
+        }
+
+        function addToEquation(value) {
+            const currentLevelData = gameLevels[currentLevel];
+            
+            if (typeof value === "number") {
+                if (usedNumbers.length >= currentLevelData.numbers) {
+                    showNumberWarning();
+                    return;
+                }
+                usedNumbers.push(value);
+            }
+            
+            equation.push(value);
+            updateEquationDisplay();
+            
+            if (usedNumbers.length === currentLevelData.numbers) {
+                setTimeout(checkSolution, 500);
+            }
+        }
+
+        function updateEquationDisplay() {
+            const display = document.getElementById("equationDisplay");
+            display.innerHTML = "";
+            
+            if (equation.length === 0) {
+                display.innerHTML = "<div style=\"color: #95a5a6; font-size: 14px; font-style: italic;\">Your equation will appear here</div>";
+                return;
+            }
+            
+            equation.forEach((item, index) => {
+                const chip = document.createElement("div");
+                chip.className = `equation-chip ${typeof item === "number" ? "number-chip" : "operator-chip"}`;
+                chip.textContent = item;
+                chip.onclick = () => removeFromEquation(index);
+                display.appendChild(chip);
+            });
+        }
+
+        function removeFromEquation(index) {
+            if (index >= 0 && index < equation.length) {
+                const removed = equation.splice(index, 1)[0];
+                if (typeof removed === "number") {
+                    const numIndex = usedNumbers.indexOf(removed);
+                    if (numIndex > -1) {
+                        usedNumbers.splice(numIndex, 1);
+                    }
+                }
+                updateEquationDisplay();
+            }
+        }
+
+        function clearSingle() {
+            if (equation.length > 0) {
+                const removed = equation.pop();
+                if (typeof removed === "number") {
+                    const numIndex = usedNumbers.indexOf(removed);
+                    if (numIndex > -1) {
+                        usedNumbers.splice(numIndex, 1);
+                    }
+                }
+                updateEquationDisplay();
+            }
+        }
+
+        function clearEquation() {
+            equation = [];
+            usedNumbers = [];
+            updateEquationDisplay();
+        }
+
+        function checkSolution() {
+            const currentLevelData = gameLevels[currentLevel];
+            
+            try {
+                const expression = equation.map(item => item).join("").replace(/×/g, "*").replace(/÷/g, "/");
+                const result = eval(expression);
+                
+                if (Math.abs(result - currentLevelData.target) < 0.001) {
+                    const coinsEarned = currentLevelData.coins;
+                    playerCoins += coinsEarned;
+                    updateCoinDisplay();
+                    saveGameProgress();
+                    
+                    if (currentLevel < gameLevels.length - 1) {
+                        setTimeout(() => loadLevel(currentLevel + 1), 1000);
+                    }
+                } else {
+                    clearEquation();
+                }
+            } catch {
+                clearEquation();
+            }
+        }
+
+        function showNumberWarning() {
+            const warning = document.createElement("div");
+            warning.textContent = "Maximum numbers reached!";
+            warning.style.cssText = "position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:red; color:white; padding:10px; border-radius:5px;";
+            document.body.appendChild(warning);
+            setTimeout(() => warning.remove(), 1500);
+        }
+
+        function updateLevelDisplay() {
+            const level = gameLevels[currentLevel];
+            document.getElementById("currentLevelText").textContent = level.name;
+        }
+
+        function toggleSettings() {
+            alert("Settings would open here");
+        }
+
+        function showLevels() {
+            alert("Level selection would open here");
+        }
+
+        window.onload = initGame;
+    </script>
+</body>
+</html>
