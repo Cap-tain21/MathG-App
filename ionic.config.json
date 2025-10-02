@@ -2,10 +2,5 @@
   "name": "MathG-Game",
   "type": "react-native",
   "integrations": {},
-  "hooks": {},
-  "react-native": {
-    "android": {
-      "packageName": "com.mathg.game"
-    }
-  }
+  "id": "mathg-game"
 }
