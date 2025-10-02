@@ -1,0 +1,6 @@
+{
+  "type": "react-native",
+  "platforms": [
+    "android"
+  ]
+}

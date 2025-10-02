@@ -22,11 +22,11 @@ android {
     }
     
     signingConfigs {
-        release {
-            storeFile file('mathg-release.keystore')
-            storePassword 'ARBAPP1st@2k25'
-            keyAlias 'mathg-key'
-            keyPassword 'ARBAPP1st@2k25'
+        debug {
+            storeFile file('debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
         }
     }
     
@@ -35,7 +35,8 @@ android {
             signingConfig signingConfigs.debug
         }
         release {
-            signingConfig signingConfigs.release
+            // Use debug signing for now since we're not publishing
+            signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }

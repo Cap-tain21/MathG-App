@@ -5,3 +5,5 @@ android/build/
 ios/build/
 .env
 *.log
+*.keystore
+android/app/*.keystore
