@@ -1,7 +1,5 @@
 {
   "name": "MathG-Game",
   "type": "react-native",
-  "integrations": {},
-  "id": "mathg-game",
-  "app_id": ""
+  "integrations": {}
 }

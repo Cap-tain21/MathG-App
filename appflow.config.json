@@ -1,5 +1,0 @@
-{
-  "react-native": true,
-  "platforms": ["android"],
-  "cli": "react-native"
-}
