@@ -1,0 +1,7 @@
+{
+  "name": "MathG-Game",
+  "type": "react-native",
+  "integrations": {
+    "capacitor": {}
+  }
+}
