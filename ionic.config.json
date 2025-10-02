@@ -1,7 +1,11 @@
 {
   "name": "MathG-Game",
   "type": "react-native",
-  "integrations": {
-    "capacitor": {}
+  "integrations": {},
+  "hooks": {},
+  "react-native": {
+    "android": {
+      "packageName": "com.mathg.game"
+    }
   }
 }
